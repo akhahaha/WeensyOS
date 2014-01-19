@@ -1,15 +1,15 @@
-Name:
-UCLA ID:
+-------------------------------------------------------------------------------
+UCLA CS 111 Minilab 1. "WeensyOS"
+Professor Peter Reiher
+Winter 2014
 
+FILE:	answers.txt
+
+AUTHOR(s):
+Alan Kha        904030522	akhahaha@gmail.com
 
 -------------------------------------------------------------------------------
 
-Response to Exercise 1:
-
-
-
-Anything else you'd like us to know:
-
-
-
-Extra credit exercises:
+Exercise 1:
+No. Scheduling another process may overwrite the eax register, which is 
+required to return the correct pid value.
