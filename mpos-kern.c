@@ -239,6 +239,24 @@ do_fork(process_t *parent)
 	//                What should sys_fork() return to the child process?)
 	// You need to set one other process descriptor field as well.
 	// Finally, return the child's process ID to the parent.
+	
+	pid_t pid = 1;
+	process_t* proc;
+	do
+	{
+		proc = &proc_array[pid];
+		
+		if (proc->p_state == P_EMPTY)
+		{
+			proc->p_registers = parent->p_registers;
+			copy_stack(proc, parent);
+			proc->p_state = P_RUNNABLE;
+			proc->p_registers.reg_eax = 0; // returns 0 to child
+			return pid;
+		}
+		
+		pid++;
+	} while (pid <= NPROCS); // should be <= since we don't use proc_array[0]
 
 	return -1;
 }
@@ -246,10 +264,6 @@ do_fork(process_t *parent)
 static void
 copy_stack(process_t *dest, process_t *src)
 {
-	uint32_t src_stack_bottom, src_stack_top;
-	uint32_t dest_stack_bottom, dest_stack_top;
-
-	// YOUR CODE HERE!
 	// This function copies the 'src' process's stack into the 'dest'
 	// process's stack region.  Then it sets 'dest's stack pointer to
 	// correspond to 'src's stack pointer.
@@ -297,13 +311,23 @@ copy_stack(process_t *dest, process_t *src)
 	// We have done one for you.
 
 	// YOUR CODE HERE!
-
-	src_stack_top = 0 /* YOUR CODE HERE */;
-	src_stack_bottom = src->p_registers.reg_esp;
-	dest_stack_top = 0 /* YOUR CODE HERE */;
-	dest_stack_bottom = 0 /* YOUR CODE HERE: calculate based on the
-				 other variables */;
-	// YOUR CODE HERE: memcpy the stack and set dest->p_registers.reg_esp
+	
+	// get pids for source and destination
+	pid_t src_pid = src->p_pid;
+	pid_t dest_pid = dest->p_pid;
+	
+	uint32_t src_stack_top = PROC1_STACK_ADDR + (src_pid)*PROC_STACK_SIZE;
+	uint32_t src_stack_bottom = src->p_registers.reg_esp;	
+	size_t src_size = src_stack_top - src_stack_bottom;
+	
+	uint32_t dest_stack_top = PROC1_STACK_ADDR + (dest_pid)*PROC_STACK_SIZE;
+	uint32_t dest_stack_bottom = dest_stack_top - src_size;
+	
+	// copy stacks and set dest's reg_esp
+	memcpy((void *)dest_stack_top, (const void*) src_stack_top, src_size);	
+	dest->p_registers.reg_esp = dest_stack_bottom;
+	
+	return;
 }
 
 
