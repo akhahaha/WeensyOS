@@ -175,6 +175,7 @@ interrupt(registers_t *reg)
 		{
 			current->p_waiting->p_state = P_RUNNABLE;
 			current->p_waiting->p_registers.reg_eax = current->p_exit_status;
+			current->p_state = P_EMPTY;	// free completed process
 		}
 		
 		schedule();
@@ -194,7 +195,10 @@ interrupt(registers_t *reg)
 		    || proc_array[p].p_state == P_EMPTY)
 			current->p_registers.reg_eax = -1;
 		else if (proc_array[p].p_state == P_ZOMBIE)
+		{
 			current->p_registers.reg_eax = proc_array[p].p_exit_status;
+			proc_array[p].p_state = P_EMPTY;	// free zombie process
+		}
 		else
 		{
 			proc_array[p].p_waiting = current;	// add calling process to wait queue

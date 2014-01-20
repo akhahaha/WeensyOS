@@ -15,7 +15,7 @@ No. Scheduling another process may overwrite the eax register, which is
 required to return the correct pid value.
 
 EXERCISE 2:
-// mpos-kern.c line 232
+// mpos-kern.c line 236
 static pid_t o_fork(process_t *parent)
 {	
 	pid_t pid = 1;
@@ -39,7 +39,7 @@ static pid_t o_fork(process_t *parent)
 	return -1;
 }
 
-// mpos-kern.c line 274
+// mpos-kern.c line 278
 static void copy_stack(process_t *dest, process_t *src)
 {	
 	// get pids for source and destination
@@ -79,7 +79,7 @@ case INT_SYS_EXIT:
 	
 	schedule();
 	
-// mpos-kern.c, interrupt() line 182
+// mpos-kern.c, interrupt() line 183
 case INT_SYS_WAIT: {
 	pid_t p = current->p_registers.reg_eax;
 	if (p <= 0 || p >= NPROCS || p == current->p_pid
@@ -93,3 +93,10 @@ case INT_SYS_WAIT: {
 		current->p_state = P_BLOCKED;		// put calling process to sleep
 	}
 	schedule();
+	
+EXERCISE 4:
+Set state of any processes that returned successfully to a waiting process to 
+EMPTY, freeing them for reuse.
+
+// mpos-kern.c, interrupt() line 178
+// mpos-kern.c, interrupt() line 200
