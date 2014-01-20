@@ -125,6 +125,7 @@ start(void)
  *****************************************************************************/
 
 static pid_t do_fork(process_t *parent);
+static pid_t do_newthread(process_t *parent, int start_function);
 
 void
 interrupt(registers_t *reg)
@@ -152,6 +153,13 @@ interrupt(registers_t *reg)
 		// The 'sys_fork' system call should create a new process.
 		// You will have to complete the do_fork() function!
 		current->p_registers.reg_eax = do_fork(current);
+		run(current);
+		
+	case INT_SYS_NEWTHREAD:
+		// The 'sys_newthread' system call creates a new thread process, which 
+		// shares the same space as the calling process. The thread begins 
+		// executing the start_function. Returns the child thread's process id.
+		current->p_registers.reg_eax = do_newthread(current, current->p_registers.reg_eax);
 		run(current);
 
 	case INT_SYS_YIELD:
@@ -344,7 +352,30 @@ copy_stack(process_t *dest, process_t *src)
 	return;
 }
 
+static pid_t
+do_newthread(process_t *parent, int start_function)
+{
+	pid_t pid = 1;
+	process_t* proc;
+	do
+	{
+		proc = &proc_array[pid];
+		
+		if (proc->p_state == P_EMPTY)
+		{
+			proc->p_registers = parent->p_registers;
+			proc->p_registers.reg_eip = start_function; // set eip to start_function
+			
+			proc->p_state = P_RUNNABLE;
+			proc->p_registers.reg_eax = 0; // returns 0 to child
+			return pid;
+		}
+		
+		pid++;
+	} while (pid < NPROCS);
 
+	return -1;
+}
 
 /*****************************************************************************
  * schedule
