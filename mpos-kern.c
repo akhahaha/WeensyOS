@@ -170,6 +170,13 @@ interrupt(registers_t *reg)
 		// for this register out of 'current->p_registers'.
 		current->p_state = P_ZOMBIE;
 		current->p_exit_status = current->p_registers.reg_eax;
+		
+		if (current->p_waiting != NULL)	// wake any sleeping processes
+		{
+			current->p_waiting->p_state = P_RUNNABLE;
+			current->p_waiting->p_registers.reg_eax = current->p_exit_status;
+		}
+		
 		schedule();
 
 	case INT_SYS_WAIT: {
@@ -189,7 +196,10 @@ interrupt(registers_t *reg)
 		else if (proc_array[p].p_state == P_ZOMBIE)
 			current->p_registers.reg_eax = proc_array[p].p_exit_status;
 		else
-			current->p_registers.reg_eax = WAIT_TRYAGAIN;
+		{
+			proc_array[p].p_waiting = current;	// add calling process to wait queue
+			current->p_state = P_BLOCKED;		// put calling process to sleep
+		}
 		schedule();
 	}
 
@@ -256,7 +266,7 @@ do_fork(process_t *parent)
 		}
 		
 		pid++;
-	} while (pid <= NPROCS); // should be <= since we don't use proc_array[0]
+	} while (pid < NPROCS);
 
 	return -1;
 }

@@ -23,6 +23,7 @@ typedef struct process {
 	procstate_t p_state;		// Process state; see above
 	int p_exit_status;		// Process's exit status (if it has
 					// exited and p_state == P_ZOMBIE)
+	process_t* p_waiting;	// Process that called sys_wait() on this process
 } process_t;
 
 
