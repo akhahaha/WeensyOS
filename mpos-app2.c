@@ -60,6 +60,16 @@ run_child(void)
 	counter++;		/* Note that all "processes" share an address
 				   space, so this change to 'counter' will be
 				   visible to all processes. */
+				   
+	// if even# process, kill off odd# processes (except for thread 1)
+	if ((sys_getpid() % 2) == 0 && NPROCS > 2)
+	{
+		int pid;
+		for (pid = 3; pid < NPROCS; pid += 2)
+		{
+			int result = sys_kill(pid);
+		}
+	}
 
 	app_printf("Process %d lives, counter %d!\n",
 		   sys_getpid(), input_counter);

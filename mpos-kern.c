@@ -187,6 +187,37 @@ interrupt(registers_t *reg)
 		}
 		
 		schedule();
+		
+	case INT_SYS_KILL: {
+		// 'sys_kill' forces a process to exit. It's an error to call sys_kill 
+		// for an out-of-range PID, the current process, a process that doesn't 
+		// exist or is dead. Returns 0 if successful, -1 if not.
+
+		pid_t p = current->p_registers.reg_eax;		
+		process_t* target = &proc_array[p];
+		
+		if (p <= 0 || p >= NPROCS || p == current->p_pid
+		    || proc_array[p].p_state == P_EMPTY)
+			current->p_registers.reg_eax = -1;
+		else if (target->p_state != P_ZOMBIE)// perform exit operations
+		{
+			target->p_state = P_ZOMBIE;
+			target->p_exit_status = -1;
+			
+			if (target->p_waiting != NULL)	// wake any sleeping processes
+			{
+				target->p_waiting->p_state = P_RUNNABLE;
+				target->p_waiting->p_registers.reg_eax = target->p_exit_status;
+				target->p_state = P_EMPTY;	// free completed process
+			}
+			
+			current->p_registers.reg_eax = 0; // successful, return 0
+		}
+		else // process already exited
+			current->p_registers.reg_eax = 0;
+		
+		run(current);
+	}
 
 	case INT_SYS_WAIT: {
 		// 'sys_wait' is called to retrieve a process's exit status.

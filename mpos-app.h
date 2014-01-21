@@ -160,6 +160,27 @@ sys_exit(int status)
 
 
 /*****************************************************************************
+ * sys_kill(pid)
+ *
+ *   Forces the process with ID 'pid' to exit.
+ *   Returns 0 if successful, -1 if not.
+ *
+ *****************************************************************************/
+
+static inline int
+sys_kill(pid_t pid)
+{
+	int retval;
+	asm volatile("int %1\n"
+		     : "=a" (retval)
+		     : "i" (INT_SYS_KILL),
+		       "a" (pid)
+		     : "cc", "memory");
+	return retval;
+}
+
+
+/*****************************************************************************
  * sys_wait(pid)
  *
  *   Wait until the process with ID 'pid' exits, then return that

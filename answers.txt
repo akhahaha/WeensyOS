@@ -15,8 +15,8 @@ No. Scheduling another process may overwrite the eax register, which is
 required to return the correct pid value.
 
 EXERCISE 2:
-// mpos-kern.c, do_fork() line 265-283
-// mpos-kern.c, copy_stack() line 338-352
+// mpos-kern.c, do_fork() line 296-314
+// mpos-kern.c, copy_stack() line 369-383
 
 EXERCISE 3:
 Setting a process's state to BLOCKED essentially puts it to sleep, since 
@@ -25,14 +25,14 @@ the waiting processes can be awakened by setting its state back to RUNNABLE,
 and passing the returned value to the waiting process's eax register.
 
 // mpos-kern.c, case INT_SYS_EXIT line 182-184
-// mpos-kern.c, case INT_SYS_WAIT line 210-214
+// mpos-kern.c, case INT_SYS_WAIT line 241-245
 	
 EXERCISE 4:
 Set state of any processes that returned successfully to a waiting process to 
 EMPTY, freeing them for reuse.
 
 // mpos-kern.c, case INT_SYS_EXIT line 185-186
-// mpos-kern.c, case INT_SYS_WAIT line 208
+// mpos-kern.c, case INT_SYS_WAIT line 239
 
 EXERCISE 5:
 void start(void)
@@ -61,4 +61,10 @@ EXERICSE 6:
 // mpos-app.h, sys_newthread() line 83-104
 // mpos-kern.c, line 128
 // mpos-kern.c, case INT_SYS_NEWTHREAD line 158-163
-// mpos-kern.c, do_newthread() line 355-378
+// mpos-kern.c, do_newthread() line 386-409
+
+EXERCISE 7:
+// mpos.h, line 14
+// mpos-app.h, sys_kill() line 162-180
+// mpos-kern.c, case INT_SYS_KILL line 191-220
+// mpos-app2.h, run_child() line 64-72
