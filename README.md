@@ -1,6 +1,6 @@
 Weensy OS
 ===============
-	UCLA CS 111 Lab 1
+	UCLA CS 111 Minilab 1
 	Professor Peter Reiher
 	Winter 2014
 
