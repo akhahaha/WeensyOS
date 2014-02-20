@@ -1,4 +1,4 @@
-Weensy OS
+Weensy OS 1
 ===============
 	UCLA CS 111 Minilab 1
 	Professor Peter Reiher
@@ -9,7 +9,15 @@ Weensy OS
 Summary
 ---------------
 The WeensyOS problem sets are a series of little coding exercises that are also 
-complete operating systems.
+complete operating systems. WeensyOS 1 deals with processes and the major 
+operations required for them.
+
+Features
+---------------
+- Supports process and thread forking
+- Supports scheduling and waiting
+- Supports process killing
+- Cleans up after dead processes
 
 Installation
 ---------------
